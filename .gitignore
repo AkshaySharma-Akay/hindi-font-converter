@@ -1,5 +1,3 @@
 # PII Data - Input/Output files (do not commit user documents)
-input/*
-!input/.gitkeep
-output/*
-!output/.gitkeep
+/input/*
+/output/*
