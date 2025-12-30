@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>हिंदी फॉन्ट कन्वर्टर</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>हि</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔄 हिंदी फॉन्ट कन्वर्टर</h1>
+            <p>यूनिकोड हिंदी (मंगल) और कृतिदेव010 के बीच कन्वर्ट करें</p>
+            <p class="privacy-note">🔒 सारी प्रोसेसिंग आपके ब्राउज़र में होती है। कोई डेटा अपलोड नहीं होता।</p>
+        </header>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+            <span class="disclaimer-icon">⚠️</span>
+            <div class="disclaimer-text">
+                <strong>महत्वपूर्ण सूचना:</strong> यह कन्वर्ज़न 100% सटीक नहीं हो सकता। कृपया अपने दस्तावेज़ों को कन्वर्ट करने के बाद एक बार जाँच लें। कुछ विशेष अक्षरों या मात्राओं में अंतर हो सकता है।
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="text">📝 टेक्स्ट कन्वर्टर</button>
+            <button class="tab-btn" data-tab="file">📄 फ़ाइल कन्वर्टर</button>
+        </nav>
+
+        <!-- Text Converter Section -->
+        <section id="text-section" class="section active">
+            <div class="card">
+                <div class="converter-header">
+                    <div class="source-label" id="source-label">
+                        <span class="label-icon">🔤</span>
+                        <span>यूनिकोड हिंदी</span>
+                    </div>
+                    <button class="swap-direction-btn" id="swap-direction" title="दिशा बदलें">
+                        <span class="swap-icon">⇄</span>
+                    </button>
+                    <div class="target-label" id="target-label">
+                        <span class="label-icon">🔡</span>
+                        <span>कृतिदेव010</span>
+                    </div>
+                </div>
+
+                <div class="text-converter-grid">
+                    <div class="text-panel">
+                        <div class="panel-header">
+                            <span class="panel-title" id="input-panel-title">इनपुट (यूनिकोड)</span>
+                            <button class="panel-btn" id="clear-input" title="साफ़ करें">✕</button>
+                        </div>
+                        <textarea
+                            id="input-text"
+                            class="text-area"
+                            placeholder="यहाँ अपना हिंदी टेक्स्ट टाइप या पेस्ट करें...
+
+उदाहरण: नमस्ते भारत"
+                        ></textarea>
+                        <div class="panel-footer">
+                            <span class="char-count" id="input-count">0 अक्षर</span>
+                            <button class="panel-btn" id="paste-btn" title="क्लिपबोर्ड से पेस्ट करें">📋 पेस्ट</button>
+                        </div>
+                    </div>
+
+                    <div class="convert-actions">
+                        <button class="convert-btn" id="convert-btn">
+                            कन्वर्ट →
+                        </button>
+                    </div>
+
+                    <div class="text-panel">
+                        <div class="panel-header">
+                            <span class="panel-title" id="output-panel-title">आउटपुट (कृतिदेव)</span>
+                            <button class="panel-btn" id="copy-output" title="कॉपी करें">📋 कॉपी</button>
+                        </div>
+                        <textarea
+                            id="output-text"
+                            class="text-area output-area"
+                            readonly
+                            placeholder="कन्वर्ट किया गया टेक्स्ट यहाँ दिखेगा..."
+                        ></textarea>
+                        <div class="panel-footer">
+                            <span class="char-count" id="output-count">0 अक्षर</span>
+                            <button class="panel-btn" id="use-as-input" title="इनपुट के रूप में उपयोग करें">↩ इनपुट में डालें</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="text-status" class="status"></div>
+            </div>
+
+            <!-- Font Preview Card -->
+            <div class="card preview-card">
+                <h3>🔍 कृतिदेव फॉन्ट प्रीव्यू</h3>
+                <p class="hint">सही प्रदर्शन के लिए "Kruti Dev 010" फॉन्ट इंस्टॉल करें</p>
+                <div class="krutidev-preview" id="krutidev-preview">
+                    कन्वर्ट करने के बाद प्रीव्यू यहाँ दिखेगा...
+                </div>
+            </div>
+        </section>
+
+        <!-- File Converter Section -->
+        <section id="file-section" class="section">
+            <div class="card">
+                <div class="converter-header">
+                    <div class="source-label">
+                        <span class="label-icon">📄</span>
+                        <span>DOCX फ़ाइल</span>
+                    </div>
+                    <div class="direction-select">
+                        <select id="file-direction">
+                            <option value="u2k">यूनिकोड → कृतिदेव</option>
+                            <option value="k2u">कृतिदेव → यूनिकोड</option>
+                        </select>
+                    </div>
+                    <div class="target-label">
+                        <span class="label-icon">📥</span>
+                        <span>कन्वर्टेड फ़ाइल</span>
+                    </div>
+                </div>
+
+                <div class="file-upload-container">
+                    <div class="upload-zone" id="upload-zone">
+                        <div class="upload-icon">📁</div>
+                        <h3>अपनी DOCX फ़ाइल यहाँ ड्रॉप करें</h3>
+                        <p>या <span class="browse-link">ब्राउज़ करें</span> चुनने के लिए</p>
+                        <input type="file" id="file-input" accept=".docx" hidden>
+                    </div>
+
+                    <div class="file-selected" id="file-selected" style="display: none;">
+                        <div class="file-icon">📄</div>
+                        <div class="file-details">
+                            <span class="file-name" id="file-name">document.docx</span>
+                            <span class="file-size" id="file-size">0 KB</span>
+                        </div>
+                        <button class="remove-file-btn" id="remove-file">✕</button>
+                    </div>
+                </div>
+
+                <div class="file-actions">
+                    <button class="btn btn-primary" id="convert-file-btn" disabled>
+                        🔄 फ़ाइल कन्वर्ट करें
+                    </button>
+                </div>
+
+                <div id="file-status" class="status"></div>
+
+                <div class="download-section" id="download-section" style="display: none;">
+                    <h3>📥 कन्वर्टेड फ़ाइल डाउनलोड करें</h3>
+                    <p class="hint" style="margin-bottom: 0.75rem;">DOCX में कृतिदेव फॉन्ट | PDF में यूनिकोड (हर जगह पढ़ा जा सके)</p>
+                    <div class="download-buttons">
+                        <button class="btn btn-download" id="download-docx">
+                            <span class="btn-icon">📄</span>
+                            <span>DOCX डाउनलोड</span>
+                        </button>
+                        <button class="btn btn-download" id="download-pdf">
+                            <span class="btn-icon">📕</span>
+                            <span>PDF डाउनलोड</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Preview Card -->
+            <div class="card preview-card">
+                <h3>📖 दस्तावेज़ प्रीव्यू</h3>
+                <div class="file-preview" id="file-preview">
+                    <p class="placeholder">प्रीव्यू देखने के लिए फ़ाइल अपलोड करें...</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>
+                <strong>हिंदी फॉन्ट कन्वर्टर</strong>
+            </p>
+        </footer>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- App Scripts -->
+    <script src="js/converter.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
