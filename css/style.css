@@ -552,6 +552,15 @@ footer a:hover {
     text-decoration: underline;
 }
 
+.footer-links {
+    margin-top: 0.5rem;
+}
+
+.footer-links .separator {
+    margin: 0 0.5rem;
+    color: var(--text-muted);
+}
+
 .footer-note {
     margin-top: 0.5rem;
     font-size: 0.8rem;

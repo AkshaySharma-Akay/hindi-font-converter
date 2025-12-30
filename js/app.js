@@ -10,7 +10,6 @@ let currentDirection = 'u2k'; // 'u2k' = Unicode to Krutidev, 'k2u' = Krutidev t
 let currentFile = null;
 let convertedText = '';
 let originalText = '';
-let unicodeText = ''; // Store Unicode text for PDF generation
 
 // ============================================
 // DOM ELEMENTS
@@ -296,10 +295,8 @@ convertFileBtn.addEventListener('click', async () => {
         const direction = fileDirection.value;
         if (direction === 'u2k') {
             convertedText = unicodeToKrutidev(originalText);
-            unicodeText = originalText; // Store original Unicode for PDF
         } else {
             convertedText = krutidevToUnicode(originalText);
-            unicodeText = convertedText; // Converted text is Unicode
         }
 
         // Update preview
@@ -356,74 +353,209 @@ downloadDocxBtn.addEventListener('click', async () => {
 
 // Download PDF using browser's native print dialog (most reliable for Hindi)
 downloadPdfBtn.addEventListener('click', () => {
-    if (!unicodeText && !convertedText) return;
+    // Deterministically generate Unicode text at click time
+    const unicodeForPdf = getUnicodeTextForPdf();
 
-    const textForPdf = unicodeText || convertedText;
+    if (!unicodeForPdf) {
+        showStatus(fileStatus, '✕ PDF के लिए कोई टेक्स्ट नहीं', 'error');
+        return;
+    }
 
-    // Format paragraphs
-    const paragraphsHtml = textForPdf
-        .replace(/\r\n/g, '\n')
-        .split(/\n\n+/)
-        .map(p => p.trim())
-        .filter(p => p.length > 0)
-        .map(p => `<p>${escapeHtml(p)}</p>`)
-        .join('');
+    showStatus(fileStatus, '⏳ PDF तैयार हो रही है...', 'processing');
+    openPrintWindow(unicodeForPdf);
+});
 
-    // Open new window with formatted content
-    const printWindow = window.open('', '_blank');
+/**
+ * Deterministically compute Unicode text for PDF at call time
+ * @returns {string|null} Unicode text or null if unavailable
+ */
+function getUnicodeTextForPdf() {
+    const direction = fileDirection.value;
+
+    if (direction === 'u2k') {
+        // Original was Unicode, use it directly
+        return originalText || null;
+    } else {
+        // Original was Krutidev, convert to Unicode fresh
+        if (!originalText) return null;
+        return krutidevToUnicode(originalText);
+    }
+}
+
+/**
+ * Format text to HTML preserving line breaks and paragraph spacing
+ * @param {string} text - Input text
+ * @returns {string} HTML string
+ */
+function formatTextToHtml(text) {
+    // Normalize line endings
+    const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+    // Split by lines, preserving structure
+    const lines = normalized.split('\n');
+    const htmlParts = [];
+    let currentParagraph = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmedLine = line.trim();
+
+        if (trimmedLine === '') {
+            // Empty line - flush current paragraph and add spacing
+            if (currentParagraph.length > 0) {
+                htmlParts.push(`<p>${currentParagraph.map(l => escapeHtml(l)).join('<br>')}</p>`);
+                currentParagraph = [];
+            }
+            // Add empty paragraph for spacing
+            htmlParts.push('<p class="spacer">&nbsp;</p>');
+        } else {
+            // Non-empty line - add to current paragraph
+            currentParagraph.push(trimmedLine);
+        }
+    }
+
+    // Flush remaining paragraph
+    if (currentParagraph.length > 0) {
+        htmlParts.push(`<p>${currentParagraph.map(l => escapeHtml(l)).join('<br>')}</p>`);
+    }
+
+    // Remove consecutive spacers
+    return htmlParts
+        .filter((part, i, arr) => !(part === '<p class="spacer">&nbsp;</p>' && arr[i - 1] === '<p class="spacer">&nbsp;</p>'))
+        .join('\n');
+}
+
+/**
+ * Open print window with formatted Unicode Hindi content
+ * @param {string} unicodeText - Unicode Hindi text to print
+ */
+function openPrintWindow(unicodeText) {
+    const paragraphsHtml = formatTextToHtml(unicodeText);
+    const docTitle = getOutputFilename('.pdf');
+
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
 
     if (!printWindow) {
         showStatus(fileStatus, '✕ पॉपअप ब्लॉक हो गया। कृपया पॉपअप अनुमति दें।', 'error');
         return;
     }
 
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html lang="hi">
-        <head>
-            <meta charset="UTF-8">
-            <title>${getOutputFilename('.pdf')}</title>
-            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet">
-            <style>
-                @page {
-                    size: A4;
-                    margin: 20mm;
-                }
-                body {
-                    font-family: 'Noto Sans Devanagari', 'Mangal', sans-serif;
-                    font-size: 14px;
-                    line-height: 1.8;
-                    color: #000;
-                    background: #fff;
-                    margin: 0;
-                    padding: 40px;
-                }
-                p {
-                    margin: 0 0 1em 0;
-                    text-align: justify;
-                }
-                @media print {
-                    body { padding: 0; }
-                }
-            </style>
-        </head>
-        <body>
-            ${paragraphsHtml}
-            <script>
-                // Wait for fonts to load, then print
-                document.fonts.ready.then(() => {
-                    setTimeout(() => {
-                        window.print();
-                    }, 500);
-                });
-            </script>
-        </body>
-        </html>
-    `);
+    const htmlContent = `<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${escapeHtml(docTitle)}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Noto Sans Devanagari', 'Mangal', 'Arial Unicode MS', sans-serif;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #000;
+            background: #fff;
+            padding: 40px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        #content {
+            max-width: 100%;
+        }
+
+        p {
+            margin: 0 0 0.8em 0;
+            text-align: justify;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        p.spacer {
+            margin: 0;
+            height: 0.8em;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                background: none;
+            }
+
+            p {
+                orphans: 3;
+                widows: 3;
+            }
+        }
+
+        @media screen {
+            body {
+                max-width: 210mm;
+                margin: 0 auto;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                min-height: 297mm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+${paragraphsHtml}
+    </div>
+    <script>
+        (function() {
+            var printed = false;
+
+            function triggerPrint() {
+                if (printed) return;
+                printed = true;
+
+                // Additional delay for layout stabilization
+                setTimeout(function() {
+                    window.print();
+                }, 800);
+            }
+
+            // Wait for everything to load
+            window.onload = function() {
+                // Wait for fonts
+                if (document.fonts && document.fonts.ready) {
+                    document.fonts.ready.then(triggerPrint);
+                } else {
+                    triggerPrint();
+                }
+            };
+
+            // Fallback timeout
+            setTimeout(function() {
+                if (!printed) triggerPrint();
+            }, 3000);
+        })();
+    </script>
+</body>
+</html>`;
+
+    printWindow.document.write(htmlContent);
     printWindow.document.close();
     showStatus(fileStatus, '✓ प्रिंट डायलॉग खुला। "PDF में सेव करें" चुनें।', 'success');
-});
+}
 
 
 // ============================================

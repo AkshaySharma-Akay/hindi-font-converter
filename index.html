@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>हिंदी फॉन्ट कन्वर्टर</title>
+    <title>हिंदी यूनिकोड फ़ॉन्ट कन्वर्टर</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>हि</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
 </head>
 <body>
     <div class="container">
@@ -96,9 +96,7 @@
             <div class="card preview-card">
                 <h3>🔍 कृतिदेव फॉन्ट प्रीव्यू</h3>
                 <p class="hint">सही प्रदर्शन के लिए "Kruti Dev 010" फॉन्ट इंस्टॉल करें</p>
-                <div class="krutidev-preview" id="krutidev-preview">
-                    कन्वर्ट करने के बाद प्रीव्यू यहाँ दिखेगा...
-                </div>
+                <div class="krutidev-preview" id="krutidev-preview">कन्वर्ट करने के बाद प्रीव्यू यहाँ दिखेगा!</div>
             </div>
         </section>
 
@@ -174,16 +172,18 @@
         </section>
 
         <footer>
-            <p>
-                <strong>हिंदी फॉन्ट कन्वर्टर</strong>
+            <p><strong>हिंदी फॉन्ट कन्वर्टर</strong></p>
+            <p class="footer-links">
+                <a href="https://github.com/AkshaySharma-Akay/hindi-font-converter" target="_blank" rel="noopener">GitHub</a>
+                <span class="separator">•</span>
+                <a href="https://imakshay.me/" target="_blank" rel="noopener">Akshay Sharma</a>
             </p>
         </footer>
     </div>
 
-    <!-- External Libraries -->
-    <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
-    <script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- External Libraries (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
 
     <!-- App Scripts -->
     <script src="js/converter.js"></script>

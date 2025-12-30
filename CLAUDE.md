@@ -19,13 +19,13 @@ python -m http.server 8000
 ```
 index.html                     # Main HTML - Two-tab UI: Text Converter, File Converter
 css/style.css                  # Styles
-docs/js/
+js/
 ├── converter.js               # Core conversion: unicodeToKrutidev(), krutidevToUnicode()
-└── app.js                     # UI logic, file handling, DOCX/PDF generation
+└── app.js                     # UI logic, file handling, DOCX & PDF generation
 data/mappings.json             # Character mappings (loaded at runtime, fallback embedded)
-fonts/NotoSansDevanagari-Regular.ttf  # Bundled font
-input/                         # User files (gitignored)
-output/                        # Generated files (gitignored)
+fonts/NotoSansDevanagari-Regular.ttf  # Bundled font (for local fallback)
+input/                         # User input files (gitignored)
+output/                        # Generated output files (gitignored)
 ```
 
 ## Key Concepts
@@ -35,19 +35,24 @@ output/                        # Generated files (gitignored)
 - **i-matra (ि)**: Appears before consonant in Krutidev, after in Unicode - special handling in `converter.js`
 - **Bidirectional**: Both `unicodeToKrutidev()` and `krutidevToUnicode()` are implemented
 
-## Core Functions (docs/js/converter.js)
+## Core Functions (js/converter.js)
 
 - `unicodeToKrutidev(text)` - Convert Unicode Hindi to Krutidev encoding
 - `krutidevToUnicode(text)` - Convert Krutidev to Unicode Hindi
 - `detectFontType(text)` - Returns 'unicode', 'krutidev', 'mixed', or 'other'
 - `loadMappings()` - Load mappings from JSON (async, with embedded fallback)
 
+## PDF Generation (js/app.js)
+
+- `getUnicodeTextForPdf()` - Deterministically compute Unicode text at click time
+- `formatTextToHtml(text)` - Convert text to HTML preserving line breaks
+- `openPrintWindow(unicodeText)` - Open browser print dialog with formatted content
+- PDF uses browser print only (no jsPDF/html2canvas) for reliable Hindi rendering
+
 ## External Libraries (CDN)
 
 - `mammoth.js` (v1.6.0) - Extract text from DOCX files
 - `docx.js` (v8.5.0) - Generate DOCX files
-- `jsPDF` (v2.5.1) - PDF generation
-- `html2canvas` (v1.4.1) - HTML to canvas rendering
 
 ## Privacy
 
